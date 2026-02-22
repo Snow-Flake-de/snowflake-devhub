@@ -1,0 +1,134 @@
+import { apiClient } from './apiClient';
+
+const BASE_URL = '/api/admin';
+
+// Helper to build query string
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryString = new URLSearchParams(
+    Object.entries(params)
+      .filter(([_, v]) => v !== undefined && v !== null && v !== '')
+      .map(([k, v]) => [k, String(v)])
+  ).toString();
+  return queryString ? `?${queryString}` : '';
+};
+
+export const adminApi = {
+  // Dashboard
+  getStats: () => apiClient.get<any>(`${BASE_URL}/stats`, { requiresAuth: true }),
+
+  // Users
+  getUsers: (params: {
+    offset?: number;
+    limit?: number;
+    search?: string;
+    authType?: string;
+    isActive?: string;
+    status?: string;
+    role?: string;
+  } = {}) =>
+    apiClient.get<any>(`${BASE_URL}/users${buildQueryString(params)}`, {
+      requiresAuth: true,
+    }),
+
+  getUserDetails: (id: number) =>
+    apiClient.get<any>(`${BASE_URL}/users/${id}`, { requiresAuth: true }),
+
+  deleteUser: (id: number) =>
+    apiClient.delete<any>(`${BASE_URL}/users/${id}`, { requiresAuth: true }),
+
+  toggleUserActive: (id: number) =>
+    apiClient.patch<any>(`${BASE_URL}/users/${id}/toggle-active`, {}, { requiresAuth: true }),
+
+  setUserStatus: (id: number, status: 'PENDING' | 'ACTIVE' | 'SUSPENDED') =>
+    apiClient.patch<any>(`${BASE_URL}/users/${id}/status`, { status }, { requiresAuth: true }),
+
+  setUserRole: (
+    id: number,
+    role: 'SUPER_ADMIN' | 'ADMIN' | 'MODERATOR' | 'USER' | 'READ_ONLY'
+  ) =>
+    apiClient.patch<any>(`${BASE_URL}/users/${id}/role`, { role }, { requiresAuth: true }),
+
+  unlockUser: (id: number) =>
+    apiClient.patch<any>(`${BASE_URL}/users/${id}/unlock`, {}, { requiresAuth: true }),
+
+  resetUserSessions: (id: number) =>
+    apiClient.patch<any>(`${BASE_URL}/users/${id}/reset-sessions`, {}, { requiresAuth: true }),
+
+  forcePasswordReset: (id: number, forcePasswordReset: boolean) =>
+    apiClient.patch<any>(
+      `${BASE_URL}/users/${id}/force-password-reset`,
+      { forcePasswordReset },
+      { requiresAuth: true }
+    ),
+
+  // Snippets
+  getSnippets: (params: {
+    offset?: number;
+    limit?: number;
+    search?: string;
+    userId?: string;
+    isPublic?: string;
+    language?: string;
+    category?: string;
+  } = {}) =>
+    apiClient.get<any>(`${BASE_URL}/snippets${buildQueryString(params)}`, {
+      requiresAuth: true,
+    }),
+
+  getSnippetDetails: (id: number) =>
+    apiClient.get<any>(`${BASE_URL}/snippets/${id}`, { requiresAuth: true }),
+
+  deleteSnippet: (id: number) =>
+    apiClient.delete<any>(`${BASE_URL}/snippets/${id}`, { requiresAuth: true }),
+
+  changeSnippetOwner: (id: number, newUserId: number) =>
+    apiClient.patch<any>(
+      `${BASE_URL}/snippets/${id}/owner`,
+      { newUserId },
+      { requiresAuth: true }
+    ),
+
+  toggleSnippetPublic: (id: number) =>
+    apiClient.patch<any>(`${BASE_URL}/snippets/${id}/toggle-public`, {}, { requiresAuth: true }),
+
+  scanSnippetsForOffensive: () =>
+    apiClient.get<any>(`${BASE_URL}/snippets/scan/offensive`, { requiresAuth: true }),
+
+  // API Keys
+  getApiKeys: (params: {
+    offset?: number;
+    limit?: number;
+    userId?: string;
+  } = {}) =>
+    apiClient.get<any>(`${BASE_URL}/api-keys${buildQueryString(params)}`, {
+      requiresAuth: true,
+    }),
+
+  deleteApiKey: (id: number) =>
+    apiClient.delete<any>(`${BASE_URL}/api-keys/${id}`, { requiresAuth: true }),
+
+  // Shares
+  getShares: (params: {
+    offset?: number;
+    limit?: number;
+    userId?: string;
+    requiresAuth?: string;
+  } = {}) =>
+    apiClient.get<any>(`${BASE_URL}/shares${buildQueryString(params)}`, {
+      requiresAuth: true,
+    }),
+
+  deleteShare: (id: string) =>
+    apiClient.delete<any>(`${BASE_URL}/shares/${id}`, { requiresAuth: true }),
+
+  getSettings: () =>
+    apiClient.get<any>(`${BASE_URL}/settings`, { requiresAuth: true }),
+
+  updateSettings: (payload: any) =>
+    apiClient.patch<any>(`${BASE_URL}/settings`, payload, { requiresAuth: true }),
+
+  getAuditLogs: (params: { offset?: number; limit?: number } = {}) =>
+    apiClient.get<any>(`${BASE_URL}/audit${buildQueryString(params)}`, {
+      requiresAuth: true,
+    }),
+};

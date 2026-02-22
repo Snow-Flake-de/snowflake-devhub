@@ -1,0 +1,19 @@
+{
+  "name": "bytestash",
+  "description": "A React and node.js app that stores code snippets",
+  "author": "Jordan Dalby",
+  "version": "1.0.0",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "cd client && npm start",
+    "server": "cd server && npm start",
+    "dev": "./docker-compose.sh up --build"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}

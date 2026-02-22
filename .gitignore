@@ -1,0 +1,11 @@
+# db storage directory
+data
+
+node_modules
+dist
+
+kube.yml
+
+docker-compose-dev.yaml
+
+example-fragment.js
